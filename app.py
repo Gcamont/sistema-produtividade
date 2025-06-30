@@ -1,8 +1,8 @@
 
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Sistema de Produtividade online com sucesso via Render!"
+    return render_template("index.html")

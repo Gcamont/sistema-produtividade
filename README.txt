@@ -1,1 +1,1 @@
-Sistema de Produtividade mínimo 100% na raiz para deploy no Render.
+Sistema de Produtividade COMPLETO para Render - com estrutura de produção.
