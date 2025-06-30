@@ -1,0 +1,14 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Cadastrar RH</title></head>
+<body>
+<h2>Cadastrar Novo Usuário RH</h2>
+<form method="post">
+Usuário: <input type="text" name="usuario"><br>
+Senha: <input type="password" name="senha"><br>
+<input type="submit" value="Cadastrar">
+</form>
+{% if erro %}<p style="color:red">{{ erro }}</p>{% endif %}
+</body>
+</html>

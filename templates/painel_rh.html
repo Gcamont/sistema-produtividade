@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Painel RH</title></head>
+<body>
+<h1>Painel do RH</h1>
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="arquivo">
+    <input type="submit" value="Enviar Planilha">
+</form>
+<br>
+{% if tabela %}
+{{ tabela|safe }}
+<br>
+<a href="/exportar/excel">Exportar Excel</a> |
+<a href="/exportar/txt">Exportar TXT</a>
+{% else %}
+<p>Nenhum dado carregado.</p>
+{% endif %}
+</body>
+</html>
