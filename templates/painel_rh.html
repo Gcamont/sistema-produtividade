@@ -1,21 +1,23 @@
 
 <!DOCTYPE html>
-<html>
-<head><title>Painel RH</title></head>
-<body>
-<h1>Painel do RH</h1>
+<html><body>
+<h2>Painel RH</h2>
 <form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="arquivo">
-    <input type="submit" value="Enviar Planilha">
+<input type="file" name="arquivo">
+<input type="submit" value="Enviar Planilha">
 </form>
-<br>
 {% if tabela %}
 {{ tabela|safe }}
-<br>
-<a href="/exportar/excel">Exportar Excel</a> |
-<a href="/exportar/txt">Exportar TXT</a>
-{% else %}
-<p>Nenhum dado carregado.</p>
+<a href="/exportar/excel">Exportar Excel</a> | <a href="/exportar/txt">Exportar TXT</a>
 {% endif %}
-</body>
-</html>
+<h3>Solicitações</h3>
+<ul>
+{% for s in solicitacoes %}
+<li>{{ s.data }} - {{ s.nome }} - {{ s.pontos }} pontos - {{ s.status }}
+{% if s.status == "Pendente" %}
+ <a href="/aprovar/{{ s.id }}">[Aprovar]</a> <a href="/negar/{{ s.id }}">[Negar]</a>
+{% endif %}
+</li>
+{% endfor %}
+</ul>
+</body></html>

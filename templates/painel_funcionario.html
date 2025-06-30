@@ -1,0 +1,15 @@
+
+<!DOCTYPE html>
+<html><body>
+<h2>Bem-vindo, {{ nome }}</h2>
+<p>Pontos em estoque: {{ estoque }}</p>
+<form method="post">
+Resgatar pontos: <input type="number" name="pontos"><input type="submit" value="Solicitar">
+</form>
+<h3>Solicitações:</h3>
+<ul>
+{% for s in solicitacoes %}
+<li>{{ s.data }} - {{ s.pontos }} pontos - {{ s.status }}</li>
+{% endfor %}
+</ul>
+</body></html>

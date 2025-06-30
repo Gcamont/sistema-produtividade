@@ -1,12 +1,11 @@
 
 <!DOCTYPE html>
 <html><body>
-<h2>Login RH</h2>
+<h2>Login Funcionário</h2>
 <form method="post">
-Usuário: <input type="text" name="usuario"><br>
+Matrícula: <input type="text" name="matricula"><br>
 Senha: <input type="password" name="senha"><br>
 <input type="submit" value="Entrar">
 </form>
 {% if erro %}<p style="color:red">{{ erro }}</p>{% endif %}
-<a href="/cadastrar_rh">Cadastrar novo RH</a>
 </body></html>
