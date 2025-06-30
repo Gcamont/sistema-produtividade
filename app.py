@@ -3,19 +3,52 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 import pandas as pd
 import os
 import bcrypt
-import uuid
 from datetime import datetime
+import uuid
 
 app = Flask(__name__)
 app.secret_key = 'ursao_produtividade_123'
 
-# Usuários RH (armazenado em dicionário para este exemplo)
 usuarios_rh = {"admin": bcrypt.hashpw("admin123".encode(), bcrypt.gensalt())}
+usuarios_func = {"123": {"senha": bcrypt.hashpw("senha123".encode(), bcrypt.gensalt()), "nome": "Funcionario Exemplo"}}
 dados_funcionarios = pd.DataFrame()
+solicitacoes = []
 
 @app.route("/")
 def index():
-    return redirect(url_for("login_rh"))
+    return render_template("index.html")
+
+@app.route("/login_funcionario", methods=["GET", "POST"])
+def login_funcionario():
+    if request.method == "POST":
+        matricula = request.form["matricula"]
+        senha = request.form["senha"]
+        if matricula in usuarios_func and bcrypt.checkpw(senha.encode(), usuarios_func[matricula]["senha"]):
+            session["matricula"] = matricula
+            return redirect(url_for("painel_funcionario"))
+        return render_template("login_funcionario.html", erro="Matrícula ou senha incorreta")
+    return render_template("login_funcionario.html")
+
+@app.route("/painel_funcionario", methods=["GET", "POST"])
+def painel_funcionario():
+    if "matricula" not in session:
+        return redirect(url_for("login_funcionario"))
+    matricula = session["matricula"]
+    dados = dados_funcionarios[dados_funcionarios["Matrícula"] == int(matricula)]
+    if dados.empty:
+        return "<p>Sem dados para este funcionário</p>"
+    estoque = int(dados["Estoque"].values[0])
+    if request.method == "POST":
+        pontos_solicitados = int(request.form["pontos"])
+        solicitacoes.append({
+            "id": str(uuid.uuid4()),
+            "matricula": matricula,
+            "nome": usuarios_func[matricula]["nome"],
+            "pontos": pontos_solicitados,
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "status": "Pendente"
+        })
+    return render_template("painel_funcionario.html", nome=usuarios_func[matricula]["nome"], estoque=estoque, solicitacoes=[s for s in solicitacoes if s["matricula"] == matricula])
 
 @app.route("/login_rh", methods=["GET", "POST"])
 def login_rh():
@@ -66,9 +99,21 @@ def upload():
 def painel_rh():
     if "usuario_rh" not in session:
         return redirect(url_for("login_rh"))
-    if dados_funcionarios.empty:
-        return render_template("painel_rh.html", tabela=None)
-    return render_template("painel_rh.html", tabela=dados_funcionarios.to_html(classes='table table-striped', index=False))
+    return render_template("painel_rh.html", tabela=dados_funcionarios.to_html(index=False) if not dados_funcionarios.empty else None, solicitacoes=solicitacoes)
+
+@app.route("/aprovar/<id>")
+def aprovar(id):
+    for s in solicitacoes:
+        if s["id"] == id:
+            s["status"] = "Aprovado"
+    return redirect(url_for("painel_rh"))
+
+@app.route("/negar/<id>")
+def negar(id):
+    for s in solicitacoes:
+        if s["id"] == id:
+            s["status"] = "Negado"
+    return redirect(url_for("painel_rh"))
 
 @app.route("/exportar/<tipo>")
 def exportar(tipo):
